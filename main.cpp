@@ -35,7 +35,7 @@ public:
   CDnsSeedOpts() : nThreads(96), nDnsThreads(4), nPort(53), mbox(NULL), ns(NULL), host(NULL), tor(NULL), fUseTestNet(false), fWipeBan(false), fWipeIgnore(false), ipv4_proxy(NULL), ipv6_proxy(NULL) {}
 
   void ParseCommandLine(int argc, char **argv) {
-    static const char *help = "Bitcoin-seeder\n"
+    static const char *help = "Pexacoin-seeder\n"
                               "Usage: %s -h <host> -n <ns> [-m <mbox>] [-t <threads>] [-p <port>]\n"
                               "\n"
                               "Options:\n"
@@ -71,11 +71,11 @@ public:
         {"testnet", no_argument, &fUseTestNet, 1},
         {"wipeban", no_argument, &fWipeBan, 1},
         {"wipeignore", no_argument, &fWipeBan, 1},
-        {"help", no_argument, 0, 'h'},
+        {"help", no_argument, 0, '?'},
         {0, 0, 0, 0}
       };
       int option_index = 0;
-      int c = getopt_long(argc, argv, "h:n:m:t:p:d:o:i:k:w:", long_options, &option_index);
+      int c = getopt_long(argc, argv, "h:n:m:t:p:d:o:i:k:w:?", long_options, &option_index);
       if (c == -1) break;
       switch (c) {
         case 'h': {
@@ -153,7 +153,10 @@ public:
         filter_whitelist.insert(13);
     }
     if (host != NULL && ns == NULL) showHelp = true;
-    if (showHelp) fprintf(stderr, help, argv[0]);
+    if (showHelp) {
+        fprintf(stderr, help, argv[0]);
+        exit(0);
+    }
   }
 };
 
@@ -217,7 +220,7 @@ public:
         nets[NET_IPV6] = true;
     }
     time_t now = time(NULL);
-    FlagSpecificData thisflag = perflag[requestedFlags];
+    FlagSpecificData& thisflag = perflag[requestedFlags];
     thisflag.cacheHits++;
     if (force || thisflag.cacheHits * 400 > (thisflag.cache.size()*thisflag.cache.size()) || (thisflag.cacheHits*thisflag.cacheHits * 20 > thisflag.cache.size() && (now - thisflag.cacheTime > 5))) {
       set<CNetAddr> ips;
@@ -397,17 +400,20 @@ extern "C" void* ThreadStats(void*) {
   return nullptr;
 }
 
-static const string mainnet_seeds[] = {"dnsseed.bluematt.me", "bitseed.xf2.org", "dnsseed.bitcoin.dashjr.org", "seed.bitcoin.sipa.be", ""};
-static const string testnet_seeds[] = {"testnet-seed.alexykot.me",
-                                       "testnet-seed.bitcoin.petertodd.org",
-                                       "testnet-seed.bluematt.me",
-                                       "testnet-seed.bitcoin.schildbach.de",
-                                       ""};
+static const string mainnet_seeds[] = {"pool.pexa.dev", "seeds.pexa.dev", ""};
+static const string testnet_seeds[] = {"testnet-seed1.pexacoin.org", ""};
+
 static const string *seeds = mainnet_seeds;
 
 extern "C" void* ThreadSeeder(void*) {
   if (!fTestNet){
-    db.Add(CService("kjy2eqzk4zwi5zd3.onion", 8333), true);
+    db.Add(CService("174.138.55.214", 8235), true);
+    db.Add(CService("97.94.59.102", 8235), true);
+    db.Add(CService("140.82.43.171", 8235), true);
+    db.Add(CService("190.79.235.65", 8235), true);
+    db.Add(CService("114.74.180.176", 8235), true);
+    db.Add(CService("190.74.20.72", 8235), true);
+    db.Add(CService("190.36.240.107", 8235), true);
   }
   do {
     for (int i=0; seeds[i] != ""; i++) {
@@ -459,10 +465,10 @@ int main(int argc, char **argv) {
   bool fDNS = true;
   if (opts.fUseTestNet) {
       printf("Using testnet.\n");
-      pchMessageStart[0] = 0x0b;
-      pchMessageStart[1] = 0x11;
-      pchMessageStart[2] = 0x09;
-      pchMessageStart[3] = 0x07;
+      pchMessageStart[0] = 0x50; // P
+      pchMessageStart[1] = 0x45; // E
+      pchMessageStart[2] = 0x58; // X
+      pchMessageStart[3] = 0x41; // A
       seeds = testnet_seeds;
       fTestNet = true;
   }

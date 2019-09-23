@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  dnsseed:
+    build: .
+    image: pexacoin/dnsseeder
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    environment:
+      - PORT=5353
+      - HOSTNAME=dnsseeds.pexaproject.com
+      - NAMESERVER=vps.pexaproject.com
+      - EMAIL=admin@pexaproject.com
+    ports:
+      - "53:5353/udp"
+      - "53:5353/tcp"

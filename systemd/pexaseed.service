@@ -1,0 +1,18 @@
+# /etc/systemd/system/pexaseed.service
+
+[Unit]
+Description=Pexa Coin DNS Seed Service - mainnet
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/dnsseed -h dnsseeds.pexaproject.com -n vps.pexaproject.com -m admin@pexaproject.com -p 53
+KillMode=process
+Restart=always
+## security
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=full
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target
