@@ -16,7 +16,7 @@
 
 static inline int GetRequireHeight(const bool testnet = fTestNet)
 {
-    return testnet ? 0 : 161703; /* populate a mainnet height once there are blocks */
+    return testnet ? 0 : 162855; /* populate a mainnet height once there are blocks */
 }
 
 std::string static inline ToString(const CService &ip) {
